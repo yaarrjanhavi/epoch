@@ -1,0 +1,99 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-color: #000000;
+  --surface-color: #141414;
+  --border-color: #001000;
+  --text-color: #9CFF8C;
+  --primary-color: #C6FF3D;
+  --accent-color: #33FF66;
+}
+
+/* Base Body Setup */
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-family: 'IBM Plex Sans', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* Headlines Silkscreen */
+h1, h2, h3, .font-headline {
+  font-family: 'Silkscreen', monospace;
+  letter-spacing: 0.12em;
+}
+
+/* Retro Scanline Overlay */
+.scanlines {
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%, 
+    rgba(0, 0, 0, 0.45) 50%
+  ), linear-gradient(
+    90deg,
+    rgba(255, 0, 0, 0.015),
+    rgba(0, 255, 0, 0.01),
+    rgba(0, 0, 255, 0.015)
+  );
+  background-size: 100% 3px, 6px 100%;
+  pointer-events: none;
+}
+
+/* Retro Dot Matrix Grid (24px grid, Accent at ~16% opacity) */
+.dot-grid {
+  background-image: radial-gradient(rgba(51, 255, 102, 0.16) 1.2px, transparent 1.2px);
+  background-size: 24px 24px;
+}
+
+/* Terminal Card Glow */
+.retro-card {
+  background-color: #141414;
+  border: 1px solid #001000;
+  border-radius: 16px;
+  transition: all 0.25s ease-in-out;
+}
+
+.retro-card:hover {
+  border-color: rgba(51, 255, 102, 0.3);
+  box-shadow: 0 0 18px rgba(51, 255, 102, 0.18);
+}
+
+/* Custom terminal scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #000000;
+}
+::-webkit-scrollbar-thumb {
+  background: #002200;
+  border-radius: 3px;
+  border: 1px solid #33FF66;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #33FF66;
+}
+
+/* Konami Rainbow Pulse Mode */
+body.konami-rainbow {
+  animation: rainbow-pulse 1s linear infinite;
+}
+
+@keyframes rainbow-pulse {
+  0% { filter: hue-rotate(0deg); }
+  50% { filter: hue-rotate(180deg); }
+  100% { filter: hue-rotate(360deg); }
+}
+
+/* Reduced Motion Override */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
