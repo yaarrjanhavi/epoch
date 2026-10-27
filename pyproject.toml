@@ -1,0 +1,12 @@
+[project]
+name = "epoch"
+version = "1.0.0"
+description = "Personalized Retro-Terminal Time Capsule"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "fastapi>=0.115.0",
+    "uvicorn>=0.32.0",
+    "pydantic>=2.10.0",
+    "httpx>=0.28.0",
+    "python-dateutil>=2.9.0"
+]
