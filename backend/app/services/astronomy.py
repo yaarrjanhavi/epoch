@@ -1,11 +1,15 @@
 import math
-from datetime import datetime, date
-import ephem
+try:
+    import ephem
+except ImportError:
+    ephem = None
 from ..models.capsule import MoonPhaseInfo
 
 def get_moon_phase(dt: date) -> MoonPhaseInfo:
     """Calculates moon phase, illumination %, age in days, and name on given date."""
     try:
+        if ephem is None:
+            raise ImportError("ephem not installed")
         # ephem date representation
         ephem_date = ephem.Date(dt.strftime("%Y/%m/%d 12:00:00"))
         moon = ephem.Moon(ephem_date)
