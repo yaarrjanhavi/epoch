@@ -53,6 +53,7 @@ def parse_and_validate_date(date_str: str) -> date:
     return dt
 
 @app.get("/api/health")
+@app.get("/health")
 def health_check():
     return {
         "status": "healthy",
@@ -61,6 +62,7 @@ def health_check():
     }
 
 @app.get("/api/stats", response_model=LifeStats)
+@app.get("/stats", response_model=LifeStats)
 def get_stats_endpoint(
     date: str = Query(..., description="Birth date YYYY-MM-DD"),
     country: str = Query("Worldwide", description="Country name for life expectancy")
@@ -69,6 +71,7 @@ def get_stats_endpoint(
     return compute_life_stats(dt, country=country)
 
 @app.get("/api/name-popularity")
+@app.get("/name-popularity")
 def get_name_popularity_endpoint(
     name: str = Query(..., description="First name"),
     year: int = Query(2000, description="Birth year")
@@ -76,6 +79,7 @@ def get_name_popularity_endpoint(
     return get_name_popularity(name, year)
 
 @app.get("/api/capsule", response_model=TimeCapsuleResponse)
+@app.get("/capsule", response_model=TimeCapsuleResponse)
 async def get_time_capsule(
     date: str = Query(..., description="Birth date YYYY-MM-DD"),
     name: str = Query("Time Traveler", description="User's name"),
@@ -164,11 +168,13 @@ async def get_time_capsule(
     return response
 
 @app.post("/api/story")
+@app.post("/story")
 async def generate_story_endpoint(payload: Dict[str, Any] = Body(...)):
     story = await generate_birthday_story(payload)
     return {"story": story}
 
 @app.get("/api/compare", response_model=CompareResponse)
+@app.get("/compare", response_model=CompareResponse)
 def compare_endpoint(
     date1: str = Query(..., description="First person's birth date"),
     date2: str = Query(..., description="Second person's birth date"),

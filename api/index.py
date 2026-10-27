@@ -12,6 +12,11 @@ for p in [root_dir, backend_dir, "/var/task", "/var/task/backend"]:
 
 try:
     from backend.app.main import app
+    try:
+        from mangum import Mangum
+        handler = Mangum(app)
+    except Exception:
+        handler = app
 except Exception as e:
     err_tb = traceback.format_exc()
     print("FATAL IMPORT ERROR IN API:", err_tb)
@@ -31,3 +36,8 @@ except Exception as e:
                 "sys_path": sys.path[:5]
             }
         )
+    try:
+        from mangum import Mangum
+        handler = Mangum(app)
+    except Exception:
+        handler = app
