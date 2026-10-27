@@ -22,26 +22,31 @@ COUNTRY_CURRENCIES = {
 }
 
 def get_money_machine(birth_year: int, country: str = "Worldwide") -> MoneyMachine:
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
+    row_then = None
+    row_now = None
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
 
-    current_year = 2026
+        current_year = 2026
 
-    # Fetch birth year data
-    cursor.execute("""
-    SELECT cpi, gas_usd, bread_usd, movie_ticket_usd, gold_usd
-    FROM economy WHERE year = ?;
-    """, (birth_year,))
-    row_then = cursor.fetchone()
+        # Fetch birth year data
+        cursor.execute("""
+        SELECT cpi, gas_usd, bread_usd, movie_ticket_usd, gold_usd
+        FROM economy WHERE year = ?;
+        """, (birth_year,))
+        row_then = cursor.fetchone()
 
-    # Fetch current year data
-    cursor.execute("""
-    SELECT cpi, gas_usd, bread_usd, movie_ticket_usd, gold_usd
-    FROM economy WHERE year = ?;
-    """, (current_year,))
-    row_now = cursor.fetchone()
+        # Fetch current year data
+        cursor.execute("""
+        SELECT cpi, gas_usd, bread_usd, movie_ticket_usd, gold_usd
+        FROM economy WHERE year = ?;
+        """, (current_year,))
+        row_now = cursor.fetchone()
 
-    conn.close()
+        conn.close()
+    except Exception as e:
+        print(f"Economy DB query error: {e}")
 
     if not row_then:
         row_then = (100.0, 1.20, 0.50, 3.50, 350.0)

@@ -4,15 +4,19 @@ from ..models.capsule import BirthdayPopularity, WorldThenVsNow
 from ..config import DB_PATH
 
 def get_birthday_rarity(month: int, day: int) -> BirthdayPopularity:
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
+    row = None
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
 
-    cursor.execute("""
-    SELECT rank, rarity_percentile FROM birthday_frequency
-    WHERE month = ? AND day = ?;
-    """, (month, day))
-    row = cursor.fetchone()
-    conn.close()
+        cursor.execute("""
+        SELECT rank, rarity_percentile FROM birthday_frequency
+        WHERE month = ? AND day = ?;
+        """, (month, day))
+        row = cursor.fetchone()
+        conn.close()
+    except Exception as e:
+        print(f"Birthday rarity DB error: {e}")
 
     is_leap = (month == 2 and day == 29)
     if row:
@@ -39,42 +43,52 @@ def get_birthday_rarity(month: int, day: int) -> BirthdayPopularity:
     )
 
 def get_world_population(birth_year: int) -> Tuple[int, int]:
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
+    row_then = None
+    row_now = None
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
 
-    cursor.execute("SELECT world_population FROM population WHERE year = ?;", (birth_year,))
-    row_then = cursor.fetchone()
+        cursor.execute("SELECT world_population FROM population WHERE year = ?;", (birth_year,))
+        row_then = cursor.fetchone()
 
-    cursor.execute("SELECT world_population FROM population WHERE year = 2026;")
-    row_now = cursor.fetchone()
+        cursor.execute("SELECT world_population FROM population WHERE year = 2026;")
+        row_now = cursor.fetchone()
 
-    conn.close()
+        conn.close()
+    except Exception as e:
+        print(f"Population DB error: {e}")
 
     pop_then = row_then[0] if row_then else 5000000000
     pop_now = row_now[0] if row_now else 8200000000
     return pop_then, pop_now
 
 def get_then_vs_now(birth_year: int) -> WorldThenVsNow:
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
+    row_then = None
+    row_now = None
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
 
-    cursor.execute("""
-    SELECT p.world_population, e.internet_users_pct, e.global_life_expectancy, e.world_gdp_pc_usd
-    FROM population p
-    JOIN economy e ON p.year = e.year
-    WHERE p.year = ?;
-    """, (birth_year,))
-    row_then = cursor.fetchone()
+        cursor.execute("""
+        SELECT p.world_population, e.internet_users_pct, e.global_life_expectancy, e.world_gdp_pc_usd
+        FROM population p
+        JOIN economy e ON p.year = e.year
+        WHERE p.year = ?;
+        """, (birth_year,))
+        row_then = cursor.fetchone()
 
-    cursor.execute("""
-    SELECT p.world_population, e.internet_users_pct, e.global_life_expectancy, e.world_gdp_pc_usd
-    FROM population p
-    JOIN economy e ON p.year = e.year
-    WHERE p.year = 2026;
-    """, ())
-    row_now = cursor.fetchone()
+        cursor.execute("""
+        SELECT p.world_population, e.internet_users_pct, e.global_life_expectancy, e.world_gdp_pc_usd
+        FROM population p
+        JOIN economy e ON p.year = e.year
+        WHERE p.year = 2026;
+        """, ())
+        row_now = cursor.fetchone()
 
-    conn.close()
+        conn.close()
+    except Exception as e:
+        print(f"Then-vs-now DB error: {e}")
 
     if not row_then:
         row_then = (5300000000, 0.05, 75.4, 23800)

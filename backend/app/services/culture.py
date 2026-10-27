@@ -91,20 +91,26 @@ def get_world_leaders(year: int) -> List[WorldLeader]:
     return leaders
 
 def get_culture_and_sports(year: int) -> Tuple[Dict[str, Any], Dict[str, str], List[str]]:
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
+    row = None
+    internet_then = 0.0
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
 
-    cursor.execute("""
-    SELECT tech_gadget, tech_desc, sports_event, sports_winner, sports_details, headline_news
-    FROM culture WHERE year = ?;
-    """, (year,))
-    row = cursor.fetchone()
+        cursor.execute("""
+        SELECT tech_gadget, tech_desc, sports_event, sports_winner, sports_details, headline_news
+        FROM culture WHERE year = ?;
+        """, (year,))
+        row = cursor.fetchone()
 
-    cursor.execute("SELECT internet_users_pct FROM economy WHERE year = ?;", (year,))
-    econ_row = cursor.fetchone()
-    internet_then = econ_row[0] if econ_row else 0.0
+        cursor.execute("SELECT internet_users_pct FROM economy WHERE year = ?;", (year,))
+        econ_row = cursor.fetchone()
+        if econ_row:
+            internet_then = econ_row[0]
 
-    conn.close()
+        conn.close()
+    except Exception as e:
+        print(f"Culture DB query error: {e}")
 
     if row:
         gadget, g_desc, s_event, s_winner, s_detail, headline = row

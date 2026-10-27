@@ -8,16 +8,20 @@ def get_name_popularity(raw_name: str, birth_year: int) -> NamePopularity:
     first_name = raw_name.strip().split()[0].capitalize() if raw_name.strip() else "Guest"
     lookup_key = first_name.lower()
 
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
+    rows = []
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
 
-    cursor.execute("""
-    SELECT year, rank, count FROM babynames
-    WHERE name = ?
-    ORDER BY year ASC;
-    """, (lookup_key,))
-    rows = cursor.fetchall()
-    conn.close()
+        cursor.execute("""
+        SELECT year, rank, count FROM babynames
+        WHERE name = ?
+        ORDER BY year ASC;
+        """, (lookup_key,))
+        rows = cursor.fetchall()
+        conn.close()
+    except Exception as e:
+        print(f"Names DB query error: {e}")
 
     if rows:
         points = [NameRankPoint(year=r[0], rank=r[1], count=r[2]) for r in rows]
